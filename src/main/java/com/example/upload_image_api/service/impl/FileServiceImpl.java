@@ -1,5 +1,6 @@
 package com.example.upload_image_api.service.impl;
 
+import com.example.upload_image_api.dto.GetImageDto;
 import com.example.upload_image_api.entity.File;
 import com.example.upload_image_api.repository.FileRepository;
 import com.example.upload_image_api.service.FileService;
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -59,14 +61,24 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public List<File> getImages() {
-        return repository.findAll();
+    public List<GetImageDto> getImages() {
+        return convertToGetImageDto(repository.findAll());
     }
 
     @Override
     @Transactional
-    public List<File> getImageByName(String name) {
-        return repository.findByOriginalNameContaining(name);
+    public List<GetImageDto> getImageByName(String name) {
+        return convertToGetImageDto(repository.findByOriginalNameContaining(name));
+    }
+
+    private List<GetImageDto> convertToGetImageDto(List<File> list) {
+        return list.stream().map(image -> {
+            GetImageDto dto = new GetImageDto();
+            dto.setId(image.getId());
+            dto.setOriginalName(image.getOriginalName());
+            dto.setUrl(image.getUrl());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
 }

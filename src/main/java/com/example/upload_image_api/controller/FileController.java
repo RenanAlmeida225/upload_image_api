@@ -1,6 +1,6 @@
 package com.example.upload_image_api.controller;
 
-import com.example.upload_image_api.entity.File;
+import com.example.upload_image_api.dto.GetImageDto;
 import com.example.upload_image_api.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,14 +27,14 @@ public class FileController {
     }
 
     @GetMapping
-    public ResponseEntity<List<File>> getImages() {
-        List<File> images = service.getImages();
+    public ResponseEntity<List<GetImageDto>> getImages() {
+        List<GetImageDto> images = service.getImages();
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 
     @GetMapping("{name}")
-    public ResponseEntity<List<File>> getImageByName(@PathVariable String name) {
-        List<File> images = service.getImageByName(name);
+    public ResponseEntity<List<GetImageDto>> getImageByName(@PathVariable String name) {
+        List<GetImageDto> images = service.getImageByName(name);
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 }

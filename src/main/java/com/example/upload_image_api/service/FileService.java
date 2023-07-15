@@ -1,6 +1,6 @@
 package com.example.upload_image_api.service;
 
-import com.example.upload_image_api.entity.File;
+import com.example.upload_image_api.dto.GetImageDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public interface FileService {
 
     void save(MultipartFile file);
 
-    List<File> getImages();
+    List<GetImageDto> getImages();
 
-    List<File> getImageByName(String name);
+    List<GetImageDto> getImageByName(String name);
 }
