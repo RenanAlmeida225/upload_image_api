@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +20,7 @@ import jakarta.transaction.Transactional;
 @Service
 public class FileServiceImpl implements FileService {
 
-    private FileRepository repository;
+    private final FileRepository repository;
     private final Path root = Paths.get("uploads");
 
     public FileServiceImpl(FileRepository repository) {
@@ -44,7 +45,7 @@ public class FileServiceImpl implements FileService {
             Files.copy(file.getInputStream(), this.root.resolve(name));
             File f = new File();
             f.setName(name);
-            f.setOriginalName(file.getOriginalFilename());
+            f.setOriginalName(Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[0]);
             f.setType(file.getContentType());
             f.setUrl(root.toAbsolutePath().resolve(name).toString());
             repository.save(f);
