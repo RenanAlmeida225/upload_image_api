@@ -37,4 +37,13 @@ public class FileController {
         List<GetImageDto> images = service.getImageByName(name);
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
+
+    @GetMapping("image/{id}")
+    public ResponseEntity<?> getImageById(@PathVariable Long id) {
+        GetImageDto dto = service.getImageById(id);
+        if (dto == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found!");
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    }
+
+
 }

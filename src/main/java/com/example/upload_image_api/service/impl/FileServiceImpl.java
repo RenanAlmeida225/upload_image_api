@@ -71,6 +71,17 @@ public class FileServiceImpl implements FileService {
         return convertToGetImageDto(repository.findByOriginalNameContaining(name));
     }
 
+    @Override
+    public GetImageDto getImageById(long id) {
+        return repository.findById(id).map(image -> {
+            GetImageDto dto = new GetImageDto();
+            dto.setId(image.getId());
+            dto.setOriginalName(image.getOriginalName());
+            dto.setUrl(image.getUrl());
+            return dto;
+        }).orElse(null);
+    }
+
     private List<GetImageDto> convertToGetImageDto(List<File> list) {
         return list.stream().map(image -> {
             GetImageDto dto = new GetImageDto();
