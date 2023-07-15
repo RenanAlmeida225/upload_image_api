@@ -31,4 +31,10 @@ public class FileController {
         List<File> images = service.getImages();
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
+
+    @GetMapping("{name}")
+    public ResponseEntity<List<File>> getImageByName(@PathVariable String name) {
+        List<File> images = service.getImageByName(name);
+        return ResponseEntity.status(HttpStatus.OK).body(images);
+    }
 }

@@ -11,4 +11,6 @@ public interface FileService {
     void save(MultipartFile file);
 
     List<File> getImages();
+
+    List<File> getImageByName(String name);
 }

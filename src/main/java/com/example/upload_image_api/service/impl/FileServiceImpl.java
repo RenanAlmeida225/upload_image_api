@@ -65,4 +65,10 @@ public class FileServiceImpl implements FileService {
         return repository.findAll();
     }
 
+    @Override
+    @Transactional
+    public List<File> getImageByName(String name) {
+        return repository.findByOriginalNameContaining(name);
+    }
+
 }
