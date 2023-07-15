@@ -4,6 +4,7 @@ import com.example.upload_image_api.entity.File;
 import com.example.upload_image_api.repository.FileRepository;
 import com.example.upload_image_api.service.FileService;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,12 +20,9 @@ import java.util.Objects;
 @Service
 public class FileServiceImpl implements FileService {
 
-    private final FileRepository repository;
     private final Path root = Paths.get("uploads");
-
-    public FileServiceImpl(FileRepository repository) {
-        this.repository = repository;
-    }
+    @Autowired
+    private FileRepository repository;
 
     @Override
     public void init() {
