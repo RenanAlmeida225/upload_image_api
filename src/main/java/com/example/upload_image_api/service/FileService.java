@@ -1,9 +1,14 @@
 package com.example.upload_image_api.service;
 
+import com.example.upload_image_api.entity.File;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface FileService {
-    public void init();
+import java.util.List;
 
-    public void save(MultipartFile file);
+public interface FileService {
+    void init();
+
+    void save(MultipartFile file);
+
+    List<File> getImages();
 }

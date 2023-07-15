@@ -1,21 +1,20 @@
 package com.example.upload_image_api.service.impl;
 
+import com.example.upload_image_api.entity.File;
+import com.example.upload_image_api.repository.FileRepository;
+import com.example.upload_image_api.service.FileService;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.example.upload_image_api.entity.File;
-import com.example.upload_image_api.repository.FileRepository;
-import com.example.upload_image_api.service.FileService;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -39,7 +38,7 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public void save(MultipartFile file) {
-        if(!Objects.requireNonNull(file.getContentType()).contains("image")){
+        if (!Objects.requireNonNull(file.getContentType()).contains("image")) {
             throw new RuntimeException("only images");
         }
         LocalDateTime time = LocalDateTime.now();
@@ -58,6 +57,12 @@ public class FileServiceImpl implements FileService {
             }
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    @Transactional
+    public List<File> getImages() {
+        return repository.findAll();
     }
 
 }
