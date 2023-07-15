@@ -1,7 +1,8 @@
 # Upload image api
 
-| Methods | Urls            | Actions                             |
-|:--------|:----------------|:------------------------------------|
-| POST    | /file           | upload a image                      |
-| GET     | /file           | get a list of images (name and url) |
-| GET     | /file/:fileName | get a image                         |
+| Methods | Urls         | Actions                                 |
+|:--------|:-------------|:----------------------------------------|
+| POST    | /file        | upload a image                          |
+| GET     | /file        | get a list of images (id, name and url) |
+| GET     | /file/{name} | get a image by name                     |
+| GET     | /file/{id}   | get a image by id                       |
