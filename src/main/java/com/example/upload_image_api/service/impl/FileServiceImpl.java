@@ -39,21 +39,23 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public void save(MultipartFile file) {
+        if(!Objects.requireNonNull(file.getContentType()).contains("image")){
+            throw new RuntimeException("only images");
+        }
         LocalDateTime time = LocalDateTime.now();
         String name = time + file.getOriginalFilename();
+        File f = new File();
+        f.setName(name);
+        f.setOriginalName(Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[0]);
+        f.setType(file.getContentType());
+        f.setUrl(root.toAbsolutePath().resolve(name).toString());
         try {
             Files.copy(file.getInputStream(), this.root.resolve(name));
-            File f = new File();
-            f.setName(name);
-            f.setOriginalName(Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[0]);
-            f.setType(file.getContentType());
-            f.setUrl(root.toAbsolutePath().resolve(name).toString());
             repository.save(f);
         } catch (Exception e) {
             if (e instanceof FileAlreadyExistsException) {
                 throw new RuntimeException("A file of that name already exists.");
             }
-            System.out.println("error: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
