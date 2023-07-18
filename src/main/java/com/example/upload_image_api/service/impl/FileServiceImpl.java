@@ -37,7 +37,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public void save(MultipartFile file) {
+    public void save(MultipartFile file, String title, String description) {
         if (!Objects.requireNonNull(file.getContentType()).contains("image")) {
             throw new RuntimeException("only images");
         }
@@ -45,7 +45,9 @@ public class FileServiceImpl implements FileService {
         String name = time + file.getOriginalFilename();
         File f = new File();
         f.setName(name);
-        f.setOriginalName(Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[0]);
+        f.setTitle(title);
+        f.setDescription(description);
+        f.setOriginalName(file.getOriginalFilename());
         f.setType(file.getContentType());
         f.setUrl(root.toAbsolutePath().resolve(name).toString());
         try {
@@ -67,8 +69,8 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public List<GetImageDto> getImageByName(String name) {
-        return convertToGetImageDto(repository.findByOriginalNameContaining(name));
+    public List<GetImageDto> getImageByTitle(String title) {
+        return convertToGetImageDto(repository.findByTitleContaining(title));
     }
 
     @Override
@@ -76,7 +78,8 @@ public class FileServiceImpl implements FileService {
         return repository.findById(id).map(image -> {
             GetImageDto dto = new GetImageDto();
             dto.setId(image.getId());
-            dto.setOriginalName(image.getOriginalName());
+            dto.setTitle(image.getTitle());
+            dto.setDescription(image.getDescription());
             dto.setUrl(image.getUrl());
             return dto;
         }).orElse(null);
@@ -86,7 +89,8 @@ public class FileServiceImpl implements FileService {
         return list.stream().map(image -> {
             GetImageDto dto = new GetImageDto();
             dto.setId(image.getId());
-            dto.setOriginalName(image.getOriginalName());
+            dto.setTitle(image.getTitle());
+            dto.setDescription(image.getDescription());
             dto.setUrl(image.getUrl());
             return dto;
         }).collect(Collectors.toList());

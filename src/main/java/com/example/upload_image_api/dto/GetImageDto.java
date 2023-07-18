@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class GetImageDto {
     private long id;
-    private String originalName;
+    private String title;
+    private String description;
     private String url;
 }

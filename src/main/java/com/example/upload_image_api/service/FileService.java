@@ -8,11 +8,11 @@ import java.util.List;
 public interface FileService {
     void init();
 
-    void save(MultipartFile file);
+    void save(MultipartFile file, String title, String description);
 
     List<GetImageDto> getImages();
 
-    List<GetImageDto> getImageByName(String name);
+    List<GetImageDto> getImageByTitle(String title);
 
     GetImageDto getImageById(long id);
 }

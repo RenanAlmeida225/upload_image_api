@@ -17,9 +17,9 @@ public class FileController {
     private FileService service;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Object> save(@RequestPart("file") MultipartFile file, @RequestPart("title") String title, @RequestPart("description") String description) {
         try {
-            service.save(file);
+            service.save(file, title, description);
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -32,9 +32,9 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 
-    @GetMapping("{name}")
-    public ResponseEntity<List<GetImageDto>> getImageByName(@PathVariable String name) {
-        List<GetImageDto> images = service.getImageByName(name);
+    @GetMapping("{title}")
+    public ResponseEntity<List<GetImageDto>> getImageByName(@PathVariable String title) {
+        List<GetImageDto> images = service.getImageByTitle(title);
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 
