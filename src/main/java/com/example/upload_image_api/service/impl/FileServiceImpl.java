@@ -4,16 +4,12 @@ import com.example.upload_image_api.dto.GetImageDto;
 import com.example.upload_image_api.entity.File;
 import com.example.upload_image_api.repository.FileRepository;
 import com.example.upload_image_api.service.FileService;
+import com.example.upload_image_api.util.UploadFile;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -21,19 +17,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class FileServiceImpl implements FileService {
-
-    private final Path root = Paths.get("uploads");
     @Autowired
     private FileRepository repository;
-
-    @Override
-    public void init() {
-        try {
-            Files.createDirectories(root);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not initialize folder for upload!");
-        }
-    }
+    @Autowired
+    private UploadFile uploadFile;
 
     @Override
     @Transactional
@@ -41,24 +28,10 @@ public class FileServiceImpl implements FileService {
         if (!Objects.requireNonNull(file.getContentType()).contains("image")) {
             throw new RuntimeException("only images");
         }
-        LocalDateTime time = LocalDateTime.now();
-        String name = time + file.getOriginalFilename();
-        File f = new File();
-        f.setName(name);
-        f.setTitle(title);
-        f.setDescription(description);
-        f.setOriginalName(file.getOriginalFilename());
-        f.setType(file.getContentType());
-        f.setUrl(root.toAbsolutePath().resolve(name).toString());
-        try {
-            Files.copy(file.getInputStream(), this.root.resolve(name));
-            repository.save(f);
-        } catch (Exception e) {
-            if (e instanceof FileAlreadyExistsException) {
-                throw new RuntimeException("A file of that name already exists.");
-            }
-            throw new RuntimeException(e.getMessage());
-        }
+        String name = LocalDateTime.now() + file.getOriginalFilename();
+        String path = uploadFile.save(file, name);
+        File f = new File(title, description, name, file.getOriginalFilename(), file.getContentType(), path);
+        repository.save(f);
     }
 
     @Override

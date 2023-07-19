@@ -6,8 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface FileService {
-    void init();
-
     void save(MultipartFile file, String title, String description);
 
     List<GetImageDto> getImages();
