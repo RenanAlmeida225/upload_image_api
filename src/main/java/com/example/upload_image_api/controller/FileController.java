@@ -1,6 +1,7 @@
 package com.example.upload_image_api.controller;
 
 import com.example.upload_image_api.dto.GetImageDto;
+import com.example.upload_image_api.dto.UpdateImageDto;
 import com.example.upload_image_api.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,10 +40,23 @@ public class FileController {
     }
 
     @GetMapping("image/{id}")
-    public ResponseEntity<?> getImageById(@PathVariable Long id) {
-        GetImageDto dto = service.getImageById(id);
-        if (dto == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found!");
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    public ResponseEntity<?> getImageById(@PathVariable long id) {
+        try{
+            GetImageDto dto = service.getImageById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(dto);
+        } catch (Exception e) {
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("image/{id}")
+    public ResponseEntity<?> updateImage(@PathVariable long id, @RequestBody UpdateImageDto dto){
+       try {
+           service.updateImage(id, dto);
+           return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+       } catch (Exception e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+       }
     }
 
 
