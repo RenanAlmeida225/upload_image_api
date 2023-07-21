@@ -41,23 +41,31 @@ public class FileController {
 
     @GetMapping("image/{id}")
     public ResponseEntity<?> getImageById(@PathVariable long id) {
-        try{
+        try {
             GetImageDto dto = service.getImageById(id);
             return ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (Exception e) {
-             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PutMapping("image/{id}")
-    public ResponseEntity<?> updateImage(@PathVariable long id, @RequestBody UpdateImageDto dto){
-       try {
-           service.updateImage(id, dto);
-           return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-       } catch (Exception e) {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-       }
+    public ResponseEntity<?> updateImage(@PathVariable long id, @RequestBody UpdateImageDto dto) {
+        try {
+            service.updateImage(id, dto);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
-
+    @DeleteMapping("image/{id}")
+    public ResponseEntity<?> deleteImage(@PathVariable long id) {
+        try {
+            service.deleteImage(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }
