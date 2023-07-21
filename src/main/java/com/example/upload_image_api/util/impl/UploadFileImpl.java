@@ -33,4 +33,14 @@ public class UploadFileImpl implements UploadFile {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void delete(String path) {
+        try {
+            Files.delete(Paths.get(path));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }

@@ -5,4 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UploadFile {
 
     String save(MultipartFile file, String name);
+
+    void delete(String path);
 }
