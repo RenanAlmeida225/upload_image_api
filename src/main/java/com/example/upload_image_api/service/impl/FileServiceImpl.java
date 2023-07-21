@@ -1,6 +1,7 @@
 package com.example.upload_image_api.service.impl;
 
 import com.example.upload_image_api.dto.GetImageDto;
+import com.example.upload_image_api.dto.UpdateImageDto;
 import com.example.upload_image_api.entity.File;
 import com.example.upload_image_api.repository.FileRepository;
 import com.example.upload_image_api.service.FileService;
@@ -47,6 +48,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional
     public GetImageDto getImageById(long id) {
         return repository.findById(id).map(image -> {
             GetImageDto dto = new GetImageDto();
@@ -55,7 +57,17 @@ public class FileServiceImpl implements FileService {
             dto.setDescription(image.getDescription());
             dto.setUrl(image.getUrl());
             return dto;
-        }).orElse(null);
+        }).orElseThrow(()->new RuntimeException("image not found"));
+    }
+
+    @Override
+    @Transactional
+    public void updateImage(long id, UpdateImageDto dto) {
+        repository.findById(id).map(image->{
+            image.setTitle(dto.getTitle());
+            image.setDescription(dto.getDescription());
+            return repository.save(image);
+        }).orElseThrow(()->new RuntimeException("image not found"));
     }
 
     private List<GetImageDto> convertToGetImageDto(List<File> list) {
@@ -68,5 +80,7 @@ public class FileServiceImpl implements FileService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+
 
 }
