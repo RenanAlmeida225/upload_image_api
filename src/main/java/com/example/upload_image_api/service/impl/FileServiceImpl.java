@@ -73,7 +73,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public void deleteImage(long id) {
         repository.findById(id).map((image) -> {
-            uploadFile.delete(image.getUrl());
+            uploadFile.delete(image.getName());
             repository.delete(image);
             return image;
         }).orElseThrow(() -> new RuntimeException("image not found"));
