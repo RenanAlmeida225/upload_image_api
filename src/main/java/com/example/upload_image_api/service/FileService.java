@@ -13,4 +13,6 @@ public interface FileService {
     List<GetImageDto> getImageByTitle(String title);
 
     GetImageDto getImageById(long id);
+
+    void updateImage(long id, String title, String description);
 }
