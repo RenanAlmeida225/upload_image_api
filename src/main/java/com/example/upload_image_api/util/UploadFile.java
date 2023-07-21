@@ -6,5 +6,5 @@ public interface UploadFile {
 
     String save(MultipartFile file, String name);
 
-    void delete(String path);
+    void delete(String fileName);
 }
