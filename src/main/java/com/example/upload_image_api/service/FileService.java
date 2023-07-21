@@ -16,4 +16,6 @@ public interface FileService {
     GetImageDto getImageById(long id);
 
     void updateImage(long id, UpdateImageDto dto);
+
+    void deleteImage(long id);
 }
