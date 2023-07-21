@@ -57,17 +57,26 @@ public class FileServiceImpl implements FileService {
             dto.setDescription(image.getDescription());
             dto.setUrl(image.getUrl());
             return dto;
-        }).orElseThrow(()->new RuntimeException("image not found"));
+        }).orElseThrow(() -> new RuntimeException("image not found"));
     }
 
     @Override
     @Transactional
     public void updateImage(long id, UpdateImageDto dto) {
-        repository.findById(id).map(image->{
+        repository.findById(id).map(image -> {
             image.setTitle(dto.getTitle());
             image.setDescription(dto.getDescription());
             return repository.save(image);
-        }).orElseThrow(()->new RuntimeException("image not found"));
+        }).orElseThrow(() -> new RuntimeException("image not found"));
+    }
+
+    @Override
+    public void deleteImage(long id) {
+        repository.findById(id).map((image) -> {
+            uploadFile.delete(image.getUrl());
+            repository.delete(image);
+            return image;
+        }).orElseThrow(() -> new RuntimeException("image not found"));
     }
 
     private List<GetImageDto> convertToGetImageDto(List<File> list) {
@@ -80,7 +89,6 @@ public class FileServiceImpl implements FileService {
             return dto;
         }).collect(Collectors.toList());
     }
-
 
 
 }
