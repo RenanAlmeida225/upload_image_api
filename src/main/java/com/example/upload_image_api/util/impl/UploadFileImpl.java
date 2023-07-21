@@ -1,7 +1,6 @@
 package com.example.upload_image_api.util.impl;
 
 import com.example.upload_image_api.util.UploadFile;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Component
 public class UploadFileImpl implements UploadFile {
     private final Path root = Paths.get("uploads");
 
