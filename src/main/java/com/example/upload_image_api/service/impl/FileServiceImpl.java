@@ -50,27 +50,22 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public GetImageDto getImageById(long id) {
-        return repository.findById(id).map(image -> {
-            GetImageDto dto = new GetImageDto();
-            dto.setId(image.getId());
-            dto.setTitle(image.getTitle());
-            dto.setDescription(image.getDescription());
-            dto.setUrl(image.getUrl());
-            return dto;
-        }).orElseThrow(() -> new RuntimeException("image not found"));
+        return repository.findById(id).map(image -> new GetImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
+                .orElseThrow(() -> new RuntimeException("image not found"));
     }
 
     @Override
     @Transactional
     public void updateImage(long id, UpdateImageDto dto) {
         repository.findById(id).map(image -> {
-            image.setTitle(dto.getTitle());
-            image.setDescription(dto.getDescription());
+            image.setTitle(dto.title());
+            image.setDescription(dto.description());
             return repository.save(image);
         }).orElseThrow(() -> new RuntimeException("image not found"));
     }
 
     @Override
+    @Transactional
     public void deleteImage(long id) {
         repository.findById(id).map((image) -> {
             uploadFile.delete(image.getName());
@@ -80,15 +75,7 @@ public class FileServiceImpl implements FileService {
     }
 
     private List<GetImageDto> convertToGetImageDto(List<File> list) {
-        return list.stream().map(image -> {
-            GetImageDto dto = new GetImageDto();
-            dto.setId(image.getId());
-            dto.setTitle(image.getTitle());
-            dto.setDescription(image.getDescription());
-            dto.setUrl(image.getUrl());
-            return dto;
-        }).collect(Collectors.toList());
+        return list.stream().map(image -> new GetImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
+                .collect(Collectors.toList());
     }
-
-
 }
