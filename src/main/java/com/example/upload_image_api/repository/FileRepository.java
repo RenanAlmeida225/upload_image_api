@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface FileRepository extends JpaRepository<File, Long> {
 
-    List<File> findByTitleContaining(String originalName);
+    List<File> findByTitleContaining(String title);
 }
