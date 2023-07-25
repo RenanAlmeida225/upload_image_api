@@ -61,7 +61,8 @@ public class FileServiceImpl implements FileService {
         repository.findById(id).map(image -> {
             image.setTitle(dto.title());
             image.setDescription(dto.description());
-            return repository.save(image);
+            repository.save(image);
+            return image;
         }).orElseThrow(() -> new EntityNotFoundException("Image not found"));
     }
 
