@@ -19,12 +19,8 @@ public class FileController {
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestPart("file") MultipartFile file, @RequestPart("title") String title, @RequestPart("description") String description) {
-        try {
-            service.save(file, title, description);
-            return ResponseEntity.status(HttpStatus.CREATED).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        service.save(file, title, description);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
@@ -40,32 +36,19 @@ public class FileController {
     }
 
     @GetMapping("image/{id}")
-    public ResponseEntity<?> getImageById(@PathVariable long id) {
-        try {
-            GetImageDto dto = service.getImageById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(dto);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<GetImageDto> getImageById(@PathVariable long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.getImageById(id));
     }
 
     @PutMapping("image/{id}")
-    public ResponseEntity<?> updateImage(@PathVariable long id, @RequestBody UpdateImageDto dto) {
-        try {
-            service.updateImage(id, dto);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<Void> updateImage(@PathVariable long id, @RequestBody UpdateImageDto dto) {
+        service.updateImage(id, dto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("image/{id}")
-    public ResponseEntity<?> deleteImage(@PathVariable long id) {
-        try {
-            service.deleteImage(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<Void> deleteImage(@PathVariable long id) {
+        service.deleteImage(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

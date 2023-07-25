@@ -3,6 +3,7 @@ package com.example.upload_image_api.service.impl;
 import com.example.upload_image_api.dto.GetImageDto;
 import com.example.upload_image_api.dto.UpdateImageDto;
 import com.example.upload_image_api.entity.File;
+import com.example.upload_image_api.exception.EntityNotFoundException;
 import com.example.upload_image_api.repository.FileRepository;
 import com.example.upload_image_api.service.FileService;
 import com.example.upload_image_api.util.UploadFile;
@@ -51,7 +52,7 @@ public class FileServiceImpl implements FileService {
     @Transactional
     public GetImageDto getImageById(long id) {
         return repository.findById(id).map(image -> new GetImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
-                .orElseThrow(() -> new RuntimeException("image not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Image not found"));
     }
 
     @Override
@@ -61,7 +62,7 @@ public class FileServiceImpl implements FileService {
             image.setTitle(dto.title());
             image.setDescription(dto.description());
             return repository.save(image);
-        }).orElseThrow(() -> new RuntimeException("image not found"));
+        }).orElseThrow(() -> new EntityNotFoundException("Image not found"));
     }
 
     @Override
@@ -71,7 +72,7 @@ public class FileServiceImpl implements FileService {
             uploadFile.delete(image.getName());
             repository.delete(image);
             return image;
-        }).orElseThrow(() -> new RuntimeException("image not found"));
+        }).orElseThrow(() -> new EntityNotFoundException("Image not found"));
     }
 
     private List<GetImageDto> convertToGetImageDto(List<File> list) {
