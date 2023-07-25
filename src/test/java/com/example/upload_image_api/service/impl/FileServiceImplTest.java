@@ -1,0 +1,159 @@
+package com.example.upload_image_api.service.impl;
+
+import com.example.upload_image_api.dto.GetImageDto;
+import com.example.upload_image_api.dto.UpdateImageDto;
+import com.example.upload_image_api.entity.File;
+import com.example.upload_image_api.exception.EntityNotFoundException;
+import com.example.upload_image_api.repository.FileRepository;
+import com.example.upload_image_api.util.UploadFile;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class FileServiceImplTest {
+    MockedStatic<LocalDateTime> localDateTimeMocked;
+    @InjectMocks
+    private FileServiceImpl fileService;
+    @Mock
+    private FileRepository fileRepository;
+    @Mock
+    private UploadFile uploadFile;
+
+
+    @Test
+    void save_ShouldSaveImage() {
+        MockMultipartFile mockFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
+        String title = "any_title";
+        String description = "any_title";
+        File file = new File(title, description, LocalDateTime.of(2022, 10, 22, 10, 0) + "image.png", mockFile.getOriginalFilename(), mockFile.getContentType(), "any_url/image.png");
+        localDateTimeMocked = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS);
+        LocalDateTime now = LocalDateTime.of(2022, 10, 22, 10, 0);
+        localDateTimeMocked.when(LocalDateTime::now).thenReturn(now);
+        when(uploadFile.save(any(), any())).thenReturn("any_url/image.png");
+
+        fileService.save(mockFile, title, description);
+
+        verify(fileRepository).save(file);
+    }
+
+    @Test
+    void save_ShouldThrowIfMimetypeIsWrong() {
+        MockMultipartFile mockFile = new MockMultipartFile("file", "image.txt", MediaType.TEXT_PLAIN_VALUE, "image".getBytes());
+        String title = "any_title";
+        String description = "any_title";
+
+        assertThrows(RuntimeException.class, () -> fileService.save(mockFile, title, description));
+    }
+
+
+    @Test
+    void getImages_ShouldReturnAllImages() {
+        List<GetImageDto> imagesDto = new ArrayList<>() {{
+            new GetImageDto(1L, "any_title", "any_description", "any_url/image.png");
+            new GetImageDto(2L, "any_title", "any_description", "any_url/image.png");
+            new GetImageDto(3L, "any_title", "any_description", "any_url/image.png");
+        }};
+
+        List<File> files = new ArrayList<>() {{
+            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(1L);
+            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(2L);
+            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(3L);
+        }};
+        when(fileRepository.findAll()).thenReturn(files);
+        List<GetImageDto> images = fileService.getImages();
+        assertEquals(images, imagesDto);
+    }
+
+    @Test
+    void getImages_ShouldReturnEmptyList() {
+        when(fileRepository.findAll()).thenReturn(new ArrayList<File>());
+        List<GetImageDto> images = fileService.getImages();
+        assertTrue(images.isEmpty());
+    }
+
+    @Test
+    void getImageByTitle_ShouldReturnAllImagesIfTitleExists() {
+        List<GetImageDto> imagesDto = new ArrayList<>() {{
+            new GetImageDto(1L, "any_title", "any_description", "any_url/image.png");
+            new GetImageDto(2L, "any_title", "any_description", "any_url/image.png");
+            new GetImageDto(3L, "any_title", "any_description", "any_url/image.png");
+        }};
+
+        List<File> files = new ArrayList<>() {{
+            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(1L);
+            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(2L);
+            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(3L);
+        }};
+
+        when(fileRepository.findByTitleContaining("title")).thenReturn(files);
+        List<GetImageDto> images = fileService.getImageByTitle("title");
+        assertEquals(images, imagesDto);
+    }
+
+    @Test
+    void getImageById_ShouldReturnImageById() {
+        GetImageDto dto = new GetImageDto(1L, "any_title", "any_description", "any_url/image.png");
+        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png");
+        file.setId(1L);
+
+        when(fileRepository.findById(1L)).thenReturn(Optional.of(file));
+        GetImageDto image = fileService.getImageById(1L);
+
+        assertEquals(image, dto);
+    }
+
+    @Test
+    void getImageById_ShouldThrowIfImageNotFound() {
+        when(fileRepository.findById(1L)).thenThrow(EntityNotFoundException.class);
+        assertThrows(EntityNotFoundException.class, () -> fileService.getImageById(1L));
+    }
+
+    @Test
+    void updateImage_ShouldUpdateImage() {
+        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png");
+        file.setId(1L);
+        when(fileRepository.findById(1L)).thenReturn(Optional.of(file));
+
+        fileService.updateImage(1L, new UpdateImageDto("new title", "new description"));
+
+        verify(fileRepository).save(any());
+    }
+
+    @Test
+    void updateImage_ShouldThrowIfImageNotFound() {
+        when(fileRepository.findById(1L)).thenThrow(EntityNotFoundException.class);
+        assertThrows(EntityNotFoundException.class, () -> fileService.updateImage(1L, new UpdateImageDto("new title", "new description")));
+    }
+
+    @Test
+    void deleteImage_ShouldDeleteImage() {
+        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png");
+        file.setId(1L);
+        when(fileRepository.findById(1L)).thenReturn(Optional.of(file));
+
+        fileService.deleteImage(1L);
+        verify(uploadFile).delete(any());
+        verify(fileRepository).delete(any());
+    }
+
+    @Test
+    void deleteImage_ShouldThrowIfImageNotFound() {
+        when(fileRepository.findById(1L)).thenThrow(EntityNotFoundException.class);
+        assertThrows(EntityNotFoundException.class, () -> fileService.deleteImage(1L));
+    }
+}
