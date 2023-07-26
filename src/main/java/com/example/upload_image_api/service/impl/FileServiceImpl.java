@@ -26,14 +26,11 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public void save(MultipartFile file, String title, String description) {
-        if (!Objects.requireNonNull(file.getContentType()).contains("image")) {
-            throw new RuntimeException("only images");
-        }
-        String name = LocalDateTime.now() + file.getOriginalFilename();
-        String path = uploadFile.save(file, name);
-        File f = new File(title, description, name, file.getOriginalFilename(), file.getContentType(), path);
-        repository.save(f);
+    public void save(ImageSaveDto image) {
+        String name = LocalDateTime.now() + image.file().getOriginalFilename();
+        String path = uploadFile.save(image.file(), name);
+        File file = new File(image.title(), image.description(), name, image.file().getOriginalFilename(), image.file().getContentType(), path);
+        repository.save(file);
     }
 
     @Override
