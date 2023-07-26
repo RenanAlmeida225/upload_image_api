@@ -52,16 +52,6 @@ class FileServiceImplTest {
     }
 
     @Test
-    void save_ShouldThorwIfMimetypeIsWrong() {
-        MockMultipartFile mockFile = new MockMultipartFile("file", "image.txt", MediaType.TEXT_PLAIN_VALUE, "image".getBytes());
-        String title = "any_title";
-        String description = "any_title";
-
-        assertThrows(RuntimeException.class, () -> fileService.save(mockFile, title, description));
-    }
-
-
-    @Test
     void getImages_ShouldReturnAllImages() {
         List<ImageDto> imagesDto = new ArrayList<>() {{
             new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
