@@ -52,7 +52,7 @@ class FileServiceImplTest {
     }
 
     @Test
-    void save_ShouldThrowIfMimetypeIsWrong() {
+    void save_ShouldThorwIfMimetypeIsWrong() {
         MockMultipartFile mockFile = new MockMultipartFile("file", "image.txt", MediaType.TEXT_PLAIN_VALUE, "image".getBytes());
         String title = "any_title";
         String description = "any_title";
