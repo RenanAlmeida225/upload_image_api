@@ -1,7 +1,7 @@
 package com.example.upload_image_api.service.impl;
 
-import com.example.upload_image_api.dto.GetImageDto;
-import com.example.upload_image_api.dto.UpdateImageDto;
+import com.example.upload_image_api.dto.ImageDto;
+import com.example.upload_image_api.dto.ImageSaveDto;
 import com.example.upload_image_api.entity.File;
 import com.example.upload_image_api.exception.EntityNotFoundException;
 import com.example.upload_image_api.repository.FileRepository;
@@ -34,19 +34,19 @@ class FileServiceImplTest {
     @Mock
     private UploadFile uploadFile;
 
-
     @Test
     void save_ShouldSaveImage() {
         MockMultipartFile mockFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
         String title = "any_title";
         String description = "any_title";
         File file = new File(title, description, LocalDateTime.of(2022, 10, 22, 10, 0) + "image.png", mockFile.getOriginalFilename(), mockFile.getContentType(), "any_url/image.png");
+        ImageSaveDto image = new ImageSaveDto(mockFile, title, description);
         localDateTimeMocked = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS);
         LocalDateTime now = LocalDateTime.of(2022, 10, 22, 10, 0);
         localDateTimeMocked.when(LocalDateTime::now).thenReturn(now);
         when(uploadFile.save(any(), any())).thenReturn("any_url/image.png");
 
-        fileService.save(mockFile, title, description);
+        fileService.save(image);
 
         verify(fileRepository).save(file);
     }
@@ -63,10 +63,10 @@ class FileServiceImplTest {
 
     @Test
     void getImages_ShouldReturnAllImages() {
-        List<GetImageDto> imagesDto = new ArrayList<>() {{
-            new GetImageDto(1L, "any_title", "any_description", "any_url/image.png");
-            new GetImageDto(2L, "any_title", "any_description", "any_url/image.png");
-            new GetImageDto(3L, "any_title", "any_description", "any_url/image.png");
+        List<ImageDto> imagesDto = new ArrayList<>() {{
+            new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
+            new ImageDto(2L, "any_title", "any_description", "any_url/image.png");
+            new ImageDto(3L, "any_title", "any_description", "any_url/image.png");
         }};
 
         List<File> files = new ArrayList<>() {{
@@ -75,23 +75,23 @@ class FileServiceImplTest {
             new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(3L);
         }};
         when(fileRepository.findAll()).thenReturn(files);
-        List<GetImageDto> images = fileService.getImages();
+        List<ImageDto> images = fileService.getImages();
         assertEquals(images, imagesDto);
     }
 
     @Test
     void getImages_ShouldReturnEmptyList() {
         when(fileRepository.findAll()).thenReturn(new ArrayList<File>());
-        List<GetImageDto> images = fileService.getImages();
+        List<ImageDto> images = fileService.getImages();
         assertTrue(images.isEmpty());
     }
 
     @Test
     void getImageByTitle_ShouldReturnAllImagesIfTitleExists() {
-        List<GetImageDto> imagesDto = new ArrayList<>() {{
-            new GetImageDto(1L, "any_title", "any_description", "any_url/image.png");
-            new GetImageDto(2L, "any_title", "any_description", "any_url/image.png");
-            new GetImageDto(3L, "any_title", "any_description", "any_url/image.png");
+        List<ImageDto> imagesDto = new ArrayList<>() {{
+            new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
+            new ImageDto(2L, "any_title", "any_description", "any_url/image.png");
+            new ImageDto(3L, "any_title", "any_description", "any_url/image.png");
         }};
 
         List<File> files = new ArrayList<>() {{
@@ -101,18 +101,18 @@ class FileServiceImplTest {
         }};
 
         when(fileRepository.findByTitleContaining("title")).thenReturn(files);
-        List<GetImageDto> images = fileService.getImageByTitle("title");
+        List<ImageDto> images = fileService.getImageByTitle("title");
         assertEquals(images, imagesDto);
     }
 
     @Test
     void getImageById_ShouldReturnImageById() {
-        GetImageDto dto = new GetImageDto(1L, "any_title", "any_description", "any_url/image.png");
+        ImageDto dto = new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
         File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png");
         file.setId(1L);
 
         when(fileRepository.findById(1L)).thenReturn(Optional.of(file));
-        GetImageDto image = fileService.getImageById(1L);
+        ImageDto image = fileService.getImageById(1L);
 
         assertEquals(image, dto);
     }
@@ -129,7 +129,7 @@ class FileServiceImplTest {
         file.setId(1L);
         when(fileRepository.findById(1L)).thenReturn(Optional.of(file));
 
-        fileService.updateImage(1L, new UpdateImageDto("new title", "new description"));
+        fileService.updateImage(new ImageDto(1L, "new title", "new description", null));
 
         verify(fileRepository).save(any());
     }
@@ -137,7 +137,7 @@ class FileServiceImplTest {
     @Test
     void updateImage_ShouldThrowIfImageNotFound() {
         when(fileRepository.findById(1L)).thenThrow(EntityNotFoundException.class);
-        assertThrows(EntityNotFoundException.class, () -> fileService.updateImage(1L, new UpdateImageDto("new title", "new description")));
+        assertThrows(EntityNotFoundException.class, () -> fileService.updateImage(new ImageDto(1L, "new title", "new description", null)));
     }
 
     @Test
