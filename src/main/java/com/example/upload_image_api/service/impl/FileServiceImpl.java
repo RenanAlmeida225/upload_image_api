@@ -1,7 +1,7 @@
 package com.example.upload_image_api.service.impl;
 
-import com.example.upload_image_api.dto.GetImageDto;
-import com.example.upload_image_api.dto.UpdateImageDto;
+import com.example.upload_image_api.dto.ImageDto;
+import com.example.upload_image_api.dto.ImageSaveDto;
 import com.example.upload_image_api.entity.File;
 import com.example.upload_image_api.exception.EntityNotFoundException;
 import com.example.upload_image_api.repository.FileRepository;
@@ -10,11 +10,9 @@ import com.example.upload_image_api.util.UploadFile;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,20 +33,20 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public List<GetImageDto> getImages() {
+    public List<ImageDto> getImages() {
         return convertToGetImageDto(repository.findAll());
     }
 
     @Override
     @Transactional
-    public List<GetImageDto> getImageByTitle(String title) {
+    public List<ImageDto> getImageByTitle(String title) {
         return convertToGetImageDto(repository.findByTitleContaining(title));
     }
 
     @Override
     @Transactional
-    public GetImageDto getImageById(long id) {
-        return repository.findById(id).map(image -> new GetImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
+    public ImageDto getImageById(long id) {
+        return repository.findById(id).map(image -> new ImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
                 .orElseThrow(() -> new EntityNotFoundException("Image not found"));
     }
 
@@ -73,8 +71,8 @@ public class FileServiceImpl implements FileService {
         }).orElseThrow(() -> new EntityNotFoundException("Image not found"));
     }
 
-    private List<GetImageDto> convertToGetImageDto(List<File> list) {
-        return list.stream().map(image -> new GetImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
+    private List<ImageDto> convertToGetImageDto(List<File> list) {
+        return list.stream().map(image -> new ImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
                 .collect(Collectors.toList());
     }
 }
