@@ -54,12 +54,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public void updateImage(long id, UpdateImageDto dto) {
-        repository.findById(id).map(image -> {
-            image.setTitle(dto.title());
-            image.setDescription(dto.description());
-            repository.save(image);
-            return image;
+    public void updateImage(ImageDto image) {
+        repository.findById(image.id()).map(file -> {
+            file.setTitle(image.title());
+            file.setDescription(image.description());
+            repository.save(file);
+            return file;
         }).orElseThrow(() -> new EntityNotFoundException("Image not found"));
     }
 
