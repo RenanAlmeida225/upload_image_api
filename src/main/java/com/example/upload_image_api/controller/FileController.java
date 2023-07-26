@@ -1,13 +1,13 @@
 package com.example.upload_image_api.controller;
 
-import com.example.upload_image_api.dto.GetImageDto;
-import com.example.upload_image_api.dto.UpdateImageDto;
+import com.example.upload_image_api.dto.ImageDto;
+import com.example.upload_image_api.dto.ImageSaveDto;
 import com.example.upload_image_api.service.FileService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,31 +18,31 @@ public class FileController {
     private FileService service;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestPart("file") MultipartFile file, @RequestPart("title") String title, @RequestPart("description") String description) {
-        service.save(file, title, description);
+    public ResponseEntity<Object> save(@Valid @ModelAttribute ImageSaveDto image) {
+        service.save(image);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<GetImageDto>> getImages() {
-        List<GetImageDto> images = service.getImages();
+    public ResponseEntity<List<ImageDto>> getImages() {
+        List<ImageDto> images = service.getImages();
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 
     @GetMapping("{title}")
-    public ResponseEntity<List<GetImageDto>> getImageByName(@PathVariable String title) {
-        List<GetImageDto> images = service.getImageByTitle(title);
+    public ResponseEntity<List<ImageDto>> getImageByName(@PathVariable String title) {
+        List<ImageDto> images = service.getImageByTitle(title);
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 
     @GetMapping("image/{id}")
-    public ResponseEntity<GetImageDto> getImageById(@PathVariable long id) {
+    public ResponseEntity<ImageDto> getImageById(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.OK).body(service.getImageById(id));
     }
 
     @PutMapping("image/{id}")
-    public ResponseEntity<Void> updateImage(@PathVariable long id, @RequestBody UpdateImageDto dto) {
-        service.updateImage(id, dto);
+    public ResponseEntity<Void> updateImage(@Valid @PathVariable long id, @RequestBody ImageDto image) {
+        service.updateImage(new ImageDto(id, image.title(), image.description(), null));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
