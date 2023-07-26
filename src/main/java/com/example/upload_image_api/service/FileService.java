@@ -1,21 +1,20 @@
 package com.example.upload_image_api.service;
 
-import com.example.upload_image_api.dto.GetImageDto;
-import com.example.upload_image_api.dto.UpdateImageDto;
-import org.springframework.web.multipart.MultipartFile;
+import com.example.upload_image_api.dto.ImageDto;
+import com.example.upload_image_api.dto.ImageSaveDto;
 
 import java.util.List;
 
 public interface FileService {
-    void save(MultipartFile file, String title, String description);
+    void save(ImageSaveDto image);
 
-    List<GetImageDto> getImages();
+    List<ImageDto> getImages();
 
-    List<GetImageDto> getImageByTitle(String title);
+    List<ImageDto> getImageByTitle(String title);
 
-    GetImageDto getImageById(long id);
+    ImageDto getImageById(long id);
 
-    void updateImage(long id, UpdateImageDto dto);
+    void updateImage(ImageDto image);
 
     void deleteImage(long id);
 }
