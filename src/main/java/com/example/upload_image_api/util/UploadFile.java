@@ -1,10 +1,10 @@
 package com.example.upload_image_api.util;
 
-import org.springframework.web.multipart.MultipartFile;
+import java.io.InputStream;
 
 public interface UploadFile {
 
-    String save(MultipartFile file, String name);
+    String save(InputStream content, String name, String mimetype);
 
     void delete(String fileName);
 }
