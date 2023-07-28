@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,10 +26,15 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public void save(ImageSaveDto image) {
-        String name = LocalDateTime.now() + image.file().getOriginalFilename();
-        String path = uploadFile.save(image.file(), name);
-        File file = new File(image.title(), image.description(), name, image.file().getOriginalFilename(), image.file().getContentType(), path);
-        repository.save(file);
+        try {
+            String name = LocalDateTime.now() + image.file().getOriginalFilename();
+            String path = uploadFile.save(image.file().getInputStream(), name, image.file().getContentType());
+            File file = new File(image.title(), image.description(), name, image.file().getOriginalFilename(),
+                    image.file().getContentType(), path);
+            repository.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -46,7 +52,8 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public ImageDto getImageById(long id) {
-        return repository.findById(id).map(image -> new ImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
+        return repository.findById(id)
+                .map(image -> new ImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
                 .orElseThrow(() -> new EntityNotFoundException("Image not found"));
     }
 
@@ -72,7 +79,8 @@ public class FileServiceImpl implements FileService {
     }
 
     private List<ImageDto> convertToGetImageDto(List<File> list) {
-        return list.stream().map(image -> new ImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
+        return list.stream()
+                .map(image -> new ImageDto(image.getId(), image.getTitle(), image.getDescription(), image.getUrl()))
                 .collect(Collectors.toList());
     }
 }
