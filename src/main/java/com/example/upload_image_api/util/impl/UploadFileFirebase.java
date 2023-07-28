@@ -8,48 +8,45 @@ import com.google.cloud.storage.Bucket;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 
 @Component
 public class UploadFileFirebase implements UploadFile {
 
-    @Autowired
-    Properties properties;
+    private final Properties properties;
 
-    @PostConstruct
-    public void init() {
+    public UploadFileFirebase(Properties properties) {
+        this.properties = properties;
+    }
+
+    public Bucket connectToFirebase() {
         try {
-            FileInputStream serviceAccount = new FileInputStream(properties.getServiceAccountKey());
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setStorageBucket(properties.getBucketName())
-                    .build();
-            FirebaseApp.initializeApp(options);
+            if (FirebaseApp.getApps().isEmpty()) {
+                FileInputStream serviceAccount = new FileInputStream(properties.getServiceAccountKey());
+                FirebaseOptions options = new FirebaseOptions.Builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setStorageBucket(properties.getBucketName())
+                        .build();
+                FirebaseApp.initializeApp(options);
+            }
+            return StorageClient.getInstance().bucket();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public String save(MultipartFile file, String name) {
-        try {
-            Bucket bucket = StorageClient.getInstance().bucket();
-            bucket.create(name, file.getBytes(), file.getContentType());
-            return properties.getImageUrl() + name;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public String save(InputStream content, String name, String mimetype) {
+        Bucket bucket = connectToFirebase();
+        bucket.create(name, content, mimetype);
+        return properties.getImageUrl() + name;
     }
 
     @Override
     public void delete(String fileName) {
-        Bucket bucket = StorageClient.getInstance().bucket();
+        Bucket bucket = connectToFirebase();
         Blob blob = bucket.get(fileName);
         blob.delete();
     }
