@@ -2,7 +2,6 @@ package com.example.upload_image_api.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Null
     private long id;
     @NotBlank
     private String title;
