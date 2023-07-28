@@ -36,15 +36,17 @@ class FileServiceImplTest {
 
     @Test
     void save_ShouldSaveImage() {
-        MockMultipartFile mockFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
+        MockMultipartFile mockFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE,
+                "image".getBytes());
         String title = "any_title";
         String description = "any_title";
-        File file = new File(title, description, LocalDateTime.of(2022, 10, 22, 10, 0) + "image.png", mockFile.getOriginalFilename(), mockFile.getContentType(), "any_url/image.png");
+        File file = new File(title, description, LocalDateTime.of(2022, 10, 22, 10, 0) + "image.png",
+                mockFile.getOriginalFilename(), mockFile.getContentType(), "any_url/image.png");
         ImageSaveDto image = new ImageSaveDto(mockFile, title, description);
         localDateTimeMocked = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS);
         LocalDateTime now = LocalDateTime.of(2022, 10, 22, 10, 0);
         localDateTimeMocked.when(LocalDateTime::now).thenReturn(now);
-        when(uploadFile.save(any(), any())).thenReturn("any_url/image.png");
+        when(uploadFile.save(any(), any(), any())).thenReturn("any_url/image.png");
 
         fileService.save(image);
 
@@ -53,17 +55,24 @@ class FileServiceImplTest {
 
     @Test
     void getImages_ShouldReturnAllImages() {
-        List<ImageDto> imagesDto = new ArrayList<>() {{
-            new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
-            new ImageDto(2L, "any_title", "any_description", "any_url/image.png");
-            new ImageDto(3L, "any_title", "any_description", "any_url/image.png");
-        }};
+        List<ImageDto> imagesDto = new ArrayList<>() {
+            {
+                new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
+                new ImageDto(2L, "any_title", "any_description", "any_url/image.png");
+                new ImageDto(3L, "any_title", "any_description", "any_url/image.png");
+            }
+        };
 
-        List<File> files = new ArrayList<>() {{
-            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(1L);
-            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(2L);
-            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(3L);
-        }};
+        List<File> files = new ArrayList<>() {
+            {
+                new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                        "any_url/image.png").setId(1L);
+                new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                        "any_url/image.png").setId(2L);
+                new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                        "any_url/image.png").setId(3L);
+            }
+        };
         when(fileRepository.findAll()).thenReturn(files);
         List<ImageDto> images = fileService.getImages();
         assertEquals(images, imagesDto);
@@ -78,17 +87,24 @@ class FileServiceImplTest {
 
     @Test
     void getImageByTitle_ShouldReturnAllImagesIfTitleExists() {
-        List<ImageDto> imagesDto = new ArrayList<>() {{
-            new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
-            new ImageDto(2L, "any_title", "any_description", "any_url/image.png");
-            new ImageDto(3L, "any_title", "any_description", "any_url/image.png");
-        }};
+        List<ImageDto> imagesDto = new ArrayList<>() {
+            {
+                new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
+                new ImageDto(2L, "any_title", "any_description", "any_url/image.png");
+                new ImageDto(3L, "any_title", "any_description", "any_url/image.png");
+            }
+        };
 
-        List<File> files = new ArrayList<>() {{
-            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(1L);
-            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(2L);
-            new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png").setId(3L);
-        }};
+        List<File> files = new ArrayList<>() {
+            {
+                new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                        "any_url/image.png").setId(1L);
+                new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                        "any_url/image.png").setId(2L);
+                new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                        "any_url/image.png").setId(3L);
+            }
+        };
 
         when(fileRepository.findByTitleContaining("title")).thenReturn(files);
         List<ImageDto> images = fileService.getImageByTitle("title");
@@ -98,7 +114,8 @@ class FileServiceImplTest {
     @Test
     void getImageById_ShouldReturnImageById() {
         ImageDto dto = new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
-        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png");
+        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                "any_url/image.png");
         file.setId(1L);
 
         when(fileRepository.findById(1L)).thenReturn(Optional.of(file));
@@ -115,7 +132,8 @@ class FileServiceImplTest {
 
     @Test
     void updateImage_ShouldUpdateImage() {
-        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png");
+        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                "any_url/image.png");
         file.setId(1L);
         when(fileRepository.findById(1L)).thenReturn(Optional.of(file));
 
@@ -132,7 +150,8 @@ class FileServiceImplTest {
 
     @Test
     void deleteImage_ShouldDeleteImage() {
-        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png", "any_url/image.png");
+        File file = new File("any_title", "any_description", "any_name", "any_originalName", "image/png",
+                "any_url/image.png");
         file.setId(1L);
         when(fileRepository.findById(1L)).thenReturn(Optional.of(file));
 
