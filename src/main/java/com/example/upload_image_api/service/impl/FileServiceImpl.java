@@ -45,8 +45,8 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public List<ImageDto> getImageByTitle(String title) {
-        return convertToGetImageDto(repository.findByTitleContaining(title));
+    public List<ImageDto> searchImages(String information) {
+        return convertToGetImageDto(repository.findByTitleOrDescription(information));
     }
 
     @Override

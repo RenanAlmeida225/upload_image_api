@@ -86,7 +86,7 @@ class FileServiceImplTest {
     }
 
     @Test
-    void getImageByTitle_ShouldReturnAllImagesIfTitleExists() {
+    void searchImages_ShouldReturnAllImagesIfTitleOrDescriptionExists() {
         List<ImageDto> imagesDto = new ArrayList<>() {
             {
                 new ImageDto(1L, "any_title", "any_description", "any_url/image.png");
@@ -106,8 +106,8 @@ class FileServiceImplTest {
             }
         };
 
-        when(fileRepository.findByTitleContaining("title")).thenReturn(files);
-        List<ImageDto> images = fileService.getImageByTitle("title");
+        when(fileRepository.findByTitleOrDescription("any")).thenReturn(files);
+        List<ImageDto> images = fileService.searchImages("any");
         assertEquals(images, imagesDto);
     }
 

@@ -10,7 +10,7 @@ public interface FileService {
 
     List<ImageDto> getImages();
 
-    List<ImageDto> getImageByTitle(String title);
+    List<ImageDto> searchImages(String information);
 
     ImageDto getImageById(long id);
 

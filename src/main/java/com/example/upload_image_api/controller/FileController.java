@@ -29,9 +29,9 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 
-    @GetMapping("{title}")
-    public ResponseEntity<List<ImageDto>> getImageByName(@PathVariable String title) {
-        List<ImageDto> images = service.getImageByTitle(title);
+    @GetMapping("{data}")
+    public ResponseEntity<List<ImageDto>> searchImages(@PathVariable String data) {
+        List<ImageDto> images = service.searchImages(data);
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 
