@@ -29,7 +29,8 @@ public class FileServiceImpl implements FileService {
         try {
             String name = LocalDateTime.now() + image.file().getOriginalFilename();
             String path = uploadFile.save(image.file().getInputStream(), name, image.file().getContentType());
-            File file = new File(image.title(), image.description(), name, image.file().getOriginalFilename(),
+            File file = new File(image.title().toLowerCase(), image.description().toLowerCase(), name,
+                    image.file().getOriginalFilename(),
                     image.file().getContentType(), path);
             repository.save(file);
         } catch (IOException e) {
@@ -46,7 +47,8 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public List<ImageDto> searchImages(String information) {
-        return convertToGetImageDto(repository.findByTitleOrDescription(information));
+        String informationToLowercase = information.toLowerCase();
+        return convertToGetImageDto(repository.findByTitleOrDescription(informationToLowercase));
     }
 
     @Override
